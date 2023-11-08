@@ -4,6 +4,11 @@ let score = 0;
 let reLoadDelay = 400; // reloading of player weapon delay (between each shot)
 let lastShotTime = 0; // Initialize the last shot time
 
+const pixelFont = new FontFace('PixelFont', 'url(./PressStart2P-vaV7.ttf)');
+pixelFont.load().then((font) => {
+  document.fonts.add(font);
+});
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -24,7 +29,7 @@ const enemies = [];
 //
 function updateScore() {
   ctx.fillStyle = "white";
-  ctx.font = "20px Arial";
+  ctx.font = "20px PixelFont";
   ctx.fillText("Score: " + score, 10, 30);
 }
 
@@ -61,7 +66,7 @@ function gameLoop() {
   if (gameOver) {
     // Game over handling (you can customize this part)
     ctx.fillStyle = "red";
-    ctx.font = "40px Arial";
+    ctx.font = "40px PixelFont";
     ctx.fillText("Game Over", canvas.width / 2 - 100, canvas.height / 2);
     // TODO - Display final score & restart button
     return; // exit the game loop
