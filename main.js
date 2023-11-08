@@ -1,4 +1,8 @@
 // Initialize the canvas
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+
 let gameOver = false;
 let score = 0;
 const reLoadDelay = 400; // reloading of player weapon delay (between each shot)
@@ -46,11 +50,11 @@ const explosionFrames = [
   { x:  0, y: 93, width: 32, height: 31 },
   { x: 32, y: 93, width: 32, height: 31 },
   { x: 64, y: 93, width: 32, height: 31 },
+  { x: 96, y: 93, width: 32, height: 31 },
 ];
 
 
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+
 
 // Define player's spaceship
 const player = {
@@ -146,7 +150,7 @@ function restartGame() {
   gameOver = false;
   enemies.length = 0;
   bullets.length = 0;
-  let backgroundOffsetY = 0;
+  backgroundOffsetY = 0;
   player.destroyed = false;
   clearCanvas();
   gameLoop();
@@ -339,7 +343,7 @@ window.addEventListener("keydown", function (event) {
     bullets.push({ x: player.x + player.width / 2 - 2, y: player.y });
     lastShotTime = Date.now();
   }
-  if (event.key === 'Enter') {
+  if (event.key === 'Enter' && gameOver) {
     restartGame();
   }
 });
