@@ -7,6 +7,10 @@ const backgroundScrollSpeed = 1; // Adjust the scrolling speed as needed
 let backgroundOffsetY = 0;
 const explosionDelay = 350; // in ms
 
+// alien speeds:
+const maxSpeed = 3.5;
+const minSpeed = 0.5;
+
 const pixelFont = new FontFace('PixelFont', 'url(./PressStart2P-vaV7.ttf)');
 pixelFont.load().then((font) => {
   document.fonts.add(font);
@@ -74,12 +78,13 @@ function updateScore() {
 // check for collisions between player and aliens
 //
 function checkPlayerAlienCollision() {
-  const collisionModifier = 20;
+  const collisionYModifier = 30; // higher is alien more "in" to player sprite / deeper collision
+  const collisionXModifier = 0; // higher is alien more "in" to player sprite / deeper collision
   for (let i = 0; i < enemies.length; i++) {
     if (
-      player.x < enemies[i].x + enemies[i].width &&
+      player.x < enemies[i].x + (enemies[i].width - collisionXModifier) &&
       player.x + player.width > enemies[i].x &&
-      player.y < enemies[i].y + (enemies[i].height - collisionModifier) &&
+      player.y < enemies[i].y + (enemies[i].height - collisionYModifier) &&
       player.y + player.height > enemies[i].y
     ) {
       gameOver = true;
@@ -154,6 +159,11 @@ function checkGameOverStatus() {
     const restart = "ENTER to try again";
     textWidth = ctx.measureText(restart).width;
     ctx.fillText(restart, (canvas.width - textWidth) / 2, (canvas.height / 2) + 50);
+
+    // save score to localstorage
+    if (score > parseInt(localStorage.getItem('highScore')) || !localStorage.getItem('highScore')) {
+      localStorage.setItem('highScore', score);
+    }
 
     // TODO - Display final score & restart button
     return true; // true is gameOver
@@ -241,6 +251,7 @@ function gameLoop() {
       y: 0,
       width: 30,
       height: 30,
+      speed: Math.random() * (maxSpeed - minSpeed) + minSpeed,
     };
     enemies.push(enemy);
   }
@@ -248,9 +259,7 @@ function gameLoop() {
   // Move and draw enemies
   let currentAlienFrameIndex = 0;
   for (let i = 0; i < enemies.length; i++) {
-    enemies[i].y += 2;
-    // ctx.fillStyle = "red";
-    //ctx.fillRect(enemies[i].x, enemies[i].y, enemies[i].width, enemies[i].height);
+    enemies[i].y += enemies[i].speed;
     
     const alienFrame = alienFrames[currentAlienFrameIndex];
     ctx.drawImage(alienImage, alienFrame.x, alienFrame.y, alienFrame.width, alienFrame.height, enemies[i].x, enemies[i].y, enemies[i].width, enemies[i].height);
