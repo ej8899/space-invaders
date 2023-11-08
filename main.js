@@ -22,6 +22,13 @@ const playerFrames = [
 ];
 let currentPlayerFrameIndex = 0;
 
+const alienImage = new Image();
+alienImage.src = './SpaceWarfareSheet.png';
+const alienFrames = [
+  { x: 64, y: 31, width: 32, height: 31 }, // primary alien (0)
+  { x: 30, y: 0, width: 32, height: 31 },
+];
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -147,7 +154,7 @@ function gameLoop() {
   
   scrollBackground();
   drawBackground();
-  
+
   // Move the player
   if (rightKey && player.x < canvas.width - player.width) {
     player.x += player.speed;
@@ -196,10 +203,14 @@ function gameLoop() {
   }
 
   // Move and draw enemies
+  let currentAlienFrameIndex = 0;
   for (let i = 0; i < enemies.length; i++) {
     enemies[i].y += 2;
-    ctx.fillStyle = "red";
-    ctx.fillRect(enemies[i].x, enemies[i].y, enemies[i].width, enemies[i].height);
+    // ctx.fillStyle = "red";
+    //ctx.fillRect(enemies[i].x, enemies[i].y, enemies[i].width, enemies[i].height);
+    
+    const alienFrame = alienFrames[currentAlienFrameIndex];
+    ctx.drawImage(alienImage, alienFrame.x, alienFrame.y, alienFrame.width, alienFrame.height, enemies[i].x, enemies[i].y, enemies[i].width, enemies[i].height);
 
     // Remove enemies if they reach the bottom
     if (enemies[i].y > canvas.height) {
