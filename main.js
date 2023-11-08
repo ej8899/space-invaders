@@ -9,6 +9,9 @@ pixelFont.load().then((font) => {
   document.fonts.add(font);
 });
 
+const backgroundImage = new Image();
+backgroundImage.src = './starbg.png';
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -59,6 +62,38 @@ function canPlayerShoot() {
 }
 
 //
+// background image assembly
+//
+function drawBackground() {
+  const canvasWidth = canvas.width;
+  const canvasHeight = canvas.height;
+  const pattern = ctx.createPattern(backgroundImage, 'repeat');
+  ctx.fillStyle = pattern;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+//
+// clear Canvas when required
+//
+function clearCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+//
+// restartGame 
+//
+function restartGame() {
+  score = 0;
+  gameOver = false;
+  enemies.length = 0;
+  bullets.length = 0;
+  clearCanvas();
+  gameLoop();
+}
+
+
+
+//
 // Game loop
 //
 function gameLoop() {
@@ -74,8 +109,8 @@ function gameLoop() {
     return; // exit the game loop
   }
   
-  // Clear the canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  clearCanvas();
+  drawBackground();
 
   // Move the player
   if (rightKey && player.x < canvas.width - player.width) {
@@ -176,6 +211,10 @@ window.addEventListener("keydown", function (event) {
     // Spacebar to fire bullets
     bullets.push({ x: player.x + player.width / 2 - 2, y: player.y });
     lastShotTime = Date.now();
+  }
+  if (event.key === 'Enter' && gameOver) {
+    console.log("game over enter")
+    restartGame();
   }
 });
 
