@@ -1,10 +1,11 @@
 // Initialize the canvas
 let gameOver = false;
 let score = 0;
-let reLoadDelay = 400; // reloading of player weapon delay (between each shot)
+const reLoadDelay = 400; // reloading of player weapon delay (between each shot)
 let lastShotTime = 0; // Initialize the last shot time
-let backgroundScrollSpeed = 1; // Adjust the scrolling speed as needed
+const backgroundScrollSpeed = 1; // Adjust the scrolling speed as needed
 let backgroundOffsetY = 0;
+const explosionDelay = 350; // in ms
 
 const pixelFont = new FontFace('PixelFont', 'url(./PressStart2P-vaV7.ttf)');
 pixelFont.load().then((font) => {
@@ -28,6 +29,21 @@ const alienFrames = [
   { x: 64, y: 31, width: 32, height: 31 }, // primary alien (0)
   { x: 30, y: 0, width: 32, height: 31 },
 ];
+
+const explosionSpritesheet = new Image();
+explosionSpritesheet.src = './SpaceWarfareSheet.png';
+const explosion = {
+  x: 0,
+  y: 0,
+  currentFrame: 0,
+  active: false,
+};
+const explosionFrames = [
+  { x:  0, y: 93, width: 32, height: 31 },
+  { x: 32, y: 93, width: 32, height: 31 },
+  { x: 64, y: 93, width: 32, height: 31 },
+];
+
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -122,6 +138,9 @@ function restartGame() {
   gameLoop();
 }
 
+//
+// check for GameOver status (& display final message)
+//
 function checkGameOverStatus() {
   if (gameOver) {
     ctx.fillStyle = "red";
@@ -140,6 +159,31 @@ function checkGameOverStatus() {
     return true; // true is gameOver
   }
 }
+
+//
+// animate any explosions
+//
+function animateExplosion() {
+  if (explosion.active) {
+    const frame = explosionFrames[explosion.currentFrame];
+    ctx.drawImage(
+      explosionSpritesheet,
+      frame.x, frame.y, frame.width, frame.height,
+      explosion.x, explosion.y, frame.width, frame.height
+    );
+
+    explosion.currentFrame++;
+
+    // Check if the animation is complete
+    if (explosion.currentFrame >= explosionFrames.length) {
+      explosion.active = false;
+      explosion.currentFrame = 0;
+    } else {
+      setTimeout(animateExplosion, explosionDelay);
+    }
+  }
+}
+
 
 //
 // Primary Game loop
@@ -167,7 +211,6 @@ function gameLoop() {
   // ctx.fillStyle = "white";
   // ctx.fillRect(player.x, player.y, player.width, player.height);
   const playerFrame = playerFrames[currentPlayerFrameIndex];
-  console.log(currentPlayerFrameIndex)
   ctx.drawImage(playerImage, playerFrame.x, playerFrame.y, playerFrame.width, playerFrame.height, player.x, player.y, player.width, player.height);
   // animate thruster
   setTimeout(() => {
@@ -230,6 +273,10 @@ function gameLoop() {
         bullets[i].y < enemies[j].y + enemies[j].height &&
         bullets[i].y + 10 > enemies[j].y
       ) {
+        explosion.x = enemies[j].x;
+        explosion.y = enemies[j].y;
+        explosion.active = true;
+
         bullets.splice(i, 1);
         enemies.splice(j, 1);
         i--;
@@ -249,7 +296,7 @@ function gameLoop() {
       score -= 1; // Decrease the score by 1
     }
   }
-  
+  animateExplosion();
   checkPlayerAlienCollision();
   updateScore();
   requestAnimationFrame(gameLoop);
@@ -269,7 +316,6 @@ window.addEventListener("keydown", function (event) {
     lastShotTime = Date.now();
   }
   if (event.key === 'Enter' && gameOver) {
-    console.log("game over enter")
     restartGame();
   }
 });
