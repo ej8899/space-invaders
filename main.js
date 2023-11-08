@@ -3,6 +3,8 @@ let gameOver = false;
 let score = 0;
 let reLoadDelay = 400; // reloading of player weapon delay (between each shot)
 let lastShotTime = 0; // Initialize the last shot time
+let backgroundScrollSpeed = 1; // Adjust the scrolling speed as needed
+let backgroundOffsetY = 0;
 
 const pixelFont = new FontFace('PixelFont', 'url(./PressStart2P-vaV7.ttf)');
 pixelFont.load().then((font) => {
@@ -12,16 +14,25 @@ pixelFont.load().then((font) => {
 const backgroundImage = new Image();
 backgroundImage.src = './starbg.png';
 
+const playerImage = new Image();
+playerImage.src = './Spaceship_Asset.png';
+const playerFrames = [
+  { x: 64, y: 0, width: 64, height: 64 },
+  { x: 128, y: 0, width: 64, height: 64 },
+];
+let currentPlayerFrameIndex = 0;
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 // Define player's spaceship
 const player = {
   x: canvas.width / 2,
-  y: canvas.height - 50,
-  width: 30,
-  height: 30,
+  y: canvas.height - 70,
+  width: 64,
+  height: 64,
   speed: 5,
+  thrusterDelay: 100, // in ms
 };
 
 const bullets = [];
@@ -40,11 +51,12 @@ function updateScore() {
 // check for collisions between player and aliens
 //
 function checkPlayerAlienCollision() {
+  const collisionModifier = 20;
   for (let i = 0; i < enemies.length; i++) {
     if (
       player.x < enemies[i].x + enemies[i].width &&
       player.x + player.width > enemies[i].x &&
-      player.y < enemies[i].y + enemies[i].height &&
+      player.y < enemies[i].y + (enemies[i].height - collisionModifier) &&
       player.y + player.height > enemies[i].y
     ) {
       gameOver = true;
@@ -65,12 +77,23 @@ function canPlayerShoot() {
 //
 // background image assembly
 //
+function scrollBackground() {
+  backgroundOffsetY += backgroundScrollSpeed;
+
+  // If the offset reaches the height of the background image, reset it
+  if (backgroundOffsetY >= backgroundImage.height) {
+    backgroundOffsetY = 0;
+  }
+}
 function drawBackground() {
   const canvasWidth = canvas.width;
   const canvasHeight = canvas.height;
   const pattern = ctx.createPattern(backgroundImage, 'repeat');
   ctx.fillStyle = pattern;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.translate(0, backgroundOffsetY);
+  ctx.fillRect(0, -backgroundOffsetY, canvas.width, canvas.height);
+  ctx.translate(0, -backgroundOffsetY);
+  //ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 //
@@ -119,9 +142,12 @@ function gameLoop() {
 
   
   if (checkGameOverStatus()) return; // true is gameover
-  clearCanvas();
-  drawBackground();
 
+  clearCanvas();
+  
+  scrollBackground();
+  drawBackground();
+  
   // Move the player
   if (rightKey && player.x < canvas.width - player.width) {
     player.x += player.speed;
@@ -131,8 +157,19 @@ function gameLoop() {
   }
 
   // Draw the player
-  ctx.fillStyle = "white";
-  ctx.fillRect(player.x, player.y, player.width, player.height);
+  // ctx.fillStyle = "white";
+  // ctx.fillRect(player.x, player.y, player.width, player.height);
+  const playerFrame = playerFrames[currentPlayerFrameIndex];
+  console.log(currentPlayerFrameIndex)
+  ctx.drawImage(playerImage, playerFrame.x, playerFrame.y, playerFrame.width, playerFrame.height, player.x, player.y, player.width, player.height);
+  // animate thruster
+  setTimeout(() => {
+    currentPlayerFrameIndex ++;
+    if(currentPlayerFrameIndex > 1) {
+      currentPlayerFrameIndex = 0;
+    }
+  }, player.thrusterDelay);
+
 
   // Move and draw bullets
   for (let i = 0; i < bullets.length; i++) {
