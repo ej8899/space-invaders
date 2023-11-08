@@ -16,7 +16,7 @@ Shoot down the falling alien terraformers to save earth from the impending clima
 - improve scoring -> kills confirmed
 - improve scoring -> player health if hit
 - improve scoring -> earth status (if aliens get past)
-- center up "Game Over"
+
 
 
 ## Notes to Self:

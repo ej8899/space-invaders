@@ -67,11 +67,13 @@ function gameLoop() {
     // Game over handling (you can customize this part)
     ctx.fillStyle = "red";
     ctx.font = "40px PixelFont";
-    ctx.fillText("Game Over", canvas.width / 2 - 100, canvas.height / 2);
+    const gameOverMan = "Game Over";
+    const textWidth = ctx.measureText(gameOverMan).width;
+    ctx.fillText("Game Over", (canvas.width - textWidth) / 2, canvas.height / 2);
     // TODO - Display final score & restart button
     return; // exit the game loop
   }
-        
+  
   // Clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
