@@ -94,21 +94,20 @@ function restartGame() {
 
 function checkGameOverStatus() {
   if (gameOver) {
-    // Game over handling (you can customize this part)
     ctx.fillStyle = "red";
-    
     ctx.font = "40px PixelFont";
     const gameOverMan = "Game Over";
     let textWidth = ctx.measureText(gameOverMan).width;
     ctx.fillText(gameOverMan, (canvas.width - textWidth) / 2, canvas.height / 2);
 
+    ctx.fillStyle = "orange";
     ctx.font = "24px PixelFont";
     const restart = "ENTER to try again";
     textWidth = ctx.measureText(restart).width;
     ctx.fillText(restart, (canvas.width - textWidth) / 2, (canvas.height / 2) + 50);
 
     // TODO - Display final score & restart button
-    return; // exit the game loop
+    return true; // true is gameOver
   }
 }
 
@@ -119,10 +118,7 @@ function checkGameOverStatus() {
 function gameLoop() {
 
   
-  if (gameOver) { 
-    checkGameOverStatus();
-    return;
-  }
+  if (checkGameOverStatus()) return; // true is gameover
   clearCanvas();
   drawBackground();
 
