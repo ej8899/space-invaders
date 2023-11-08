@@ -7,6 +7,15 @@ Turns out this era of Global Boiling that we're all in together is the martians 
 Shoot down the falling alien terraformers to save earth from the impending climate (& alien) disaster.
 
 
+## Todo:
+- turn blocks to sprites
+- aliens to explode when hit
+- sounds
+- reset on game over
+- high score save to localstorage
+- improve scoring -> kills confirmed
+- improve scoring -> player health if hit
+- improve scoring -> earth status (if aliens get past)
 
 
 ## Notes to Self:
