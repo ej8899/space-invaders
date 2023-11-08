@@ -60,6 +60,7 @@ const player = {
   height: 64,
   speed: 5,
   thrusterDelay: 100, // in ms
+  destroyed: false,
 };
 
 const bullets = [];
@@ -74,6 +75,7 @@ function updateScore() {
   ctx.fillText("Score: " + score, 10, 30);
 }
 
+
 //
 // check for collisions between player and aliens
 //
@@ -87,8 +89,13 @@ function checkPlayerAlienCollision() {
       player.y < enemies[i].y + (enemies[i].height - collisionYModifier) &&
       player.y + player.height > enemies[i].y
     ) {
+      explosion.x = player.x;
+      explosion.y = player.y;
+      explosion.active = true;
+
+      player.destroyed = true;
       gameOver = true;
-      checkGameOverStatus();
+      //checkGameOverStatus();
       return;
     }
   }
@@ -139,6 +146,8 @@ function restartGame() {
   gameOver = false;
   enemies.length = 0;
   bullets.length = 0;
+  let backgroundOffsetY = 0;
+  player.destroyed = false;
   clearCanvas();
   gameLoop();
 }
@@ -200,10 +209,7 @@ function animateExplosion() {
 //
 // TODO remove any code so we just have function calls
 function gameLoop() {
-
-  
   if (checkGameOverStatus()) return; // true is gameover
-
   clearCanvas();
   
   scrollBackground();
@@ -221,7 +227,11 @@ function gameLoop() {
   // ctx.fillStyle = "white";
   // ctx.fillRect(player.x, player.y, player.width, player.height);
   const playerFrame = playerFrames[currentPlayerFrameIndex];
-  ctx.drawImage(playerImage, playerFrame.x, playerFrame.y, playerFrame.width, playerFrame.height, player.x, player.y, player.width, player.height);
+
+  if(!player.destroyed) {
+    ctx.drawImage(playerImage, playerFrame.x, playerFrame.y, playerFrame.width, playerFrame.height, player.x, player.y, player.width, player.height);
+  }
+
   // animate thruster
   setTimeout(() => {
     currentPlayerFrameIndex ++;
@@ -230,6 +240,7 @@ function gameLoop() {
     }
   }, player.thrusterDelay);
 
+  
 
   // Move and draw bullets
   for (let i = 0; i < bullets.length; i++) {
@@ -305,12 +316,16 @@ function gameLoop() {
       score -= 1; // Decrease the score by 1
     }
   }
-  animateExplosion();
+  
   checkPlayerAlienCollision();
   updateScore();
+  animateExplosion();
+  
   requestAnimationFrame(gameLoop);
 } 
 // end of gameLoop
+
+
 
 // Keyboard input handling
 let rightKey = false;
@@ -324,7 +339,7 @@ window.addEventListener("keydown", function (event) {
     bullets.push({ x: player.x + player.width / 2 - 2, y: player.y });
     lastShotTime = Date.now();
   }
-  if (event.key === 'Enter' && gameOver) {
+  if (event.key === 'Enter') {
     restartGame();
   }
 });
