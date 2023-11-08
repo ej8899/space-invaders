@@ -27,3 +27,9 @@ Just playing around with game dev in JS (& Python, but obviously this is JS rela
 font:
 license: SIL Open Font License (OFL)
 link: https://www.fontspace.com/press-start-2p-font-f11591
+
+player ship sprite sheet:
+https://guardian5.itch.io/spaceship-asset
+
+alien ship sprite sheet:
+https://puszke.itch.io/space-warfare-sprite-sheet
