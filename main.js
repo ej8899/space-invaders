@@ -48,6 +48,7 @@ function checkPlayerAlienCollision() {
       player.y + player.height > enemies[i].y
     ) {
       gameOver = true;
+      checkGameOverStatus();
       return;
     }
   }
@@ -91,13 +92,7 @@ function restartGame() {
   gameLoop();
 }
 
-
-
-//
-// Game loop
-//
-function gameLoop() {
-
+function checkGameOverStatus() {
   if (gameOver) {
     // Game over handling (you can customize this part)
     ctx.fillStyle = "red";
@@ -115,7 +110,19 @@ function gameLoop() {
     // TODO - Display final score & restart button
     return; // exit the game loop
   }
+}
+
+//
+// Primary Game loop
+//
+// TODO remove any code so we just have function calls
+function gameLoop() {
+
   
+  if (gameOver) { 
+    checkGameOverStatus();
+    return;
+  }
   clearCanvas();
   drawBackground();
 
@@ -188,9 +195,7 @@ function gameLoop() {
     }
   }
   
-  // Check for player-alien collisions
-  checkPlayerAlienCollision();
-        
+  
   // Check if an enemy gets past the player
   for (let i = 0; i < enemies.length; i++) {
     if (enemies[i].y + enemies[i].height > canvas.height) {
@@ -200,9 +205,9 @@ function gameLoop() {
       score -= 1; // Decrease the score by 1
     }
   }
-        
-  updateScore();
   
+  checkPlayerAlienCollision();
+  updateScore();
   requestAnimationFrame(gameLoop);
 } 
 // end of gameLoop
