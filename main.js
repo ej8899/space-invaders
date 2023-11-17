@@ -2,6 +2,12 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+// TODO
+// - unbreakable asteroids
+// - different alien types
+// - sounds
+// - free flow player ship w mouse / shoot w mouse left click
+// improve collision area of alien to player
 
 let gameOver = false;
 let score = 0;
